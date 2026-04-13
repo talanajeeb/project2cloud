@@ -1,6 +1,7 @@
 name: Web App Demo CI/CD
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -25,6 +26,9 @@ jobs:
       - name: Run tests
         run: pytest
 
+      - name: Run Security Scan (Bandit)
+        run: bandit -r .
+
   docker:
     runs-on: ubuntu-latest
     needs: test
@@ -42,3 +46,12 @@ jobs:
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/gp1-demo:latest
+
+      - name: Save Docker image locally
+        run: docker save ${{ secrets.DOCKERHUB_USERNAME }}/gp1-demo:latest -o gp1-demo.tar
+
+      - name: Upload Docker image as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gp1-demo-image
+          path: gp1-demo.tar
