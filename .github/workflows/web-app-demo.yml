@@ -28,8 +28,8 @@ jobs:
         run: pytest
 
       - name: Run Security Scan (Bandit)
-        run: bandit -r .
-        continue-on-error: true    
+        run: |
+          bandit -r . || true
 
   docker:
     runs-on: ubuntu-latest
